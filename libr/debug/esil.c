@@ -215,6 +215,7 @@ R_API void r_debug_esil_prestep (RDebug *d, int p) {
 R_API int r_debug_esil_stepi (RDebug *d) {
 	RAnalOp op;
 	ut8 obuf[64];
+	ut64 pc;
 	int ret = 1;
 	dbg = d;
 	RAnalEsil *esil = dbg->anal->esil;
@@ -227,11 +228,10 @@ R_API int r_debug_esil_stepi (RDebug *d) {
 		dbg->anal->esil = esil;
 	}
 	r_debug_reg_sync (dbg, R_REG_TYPE_GPR, false);
-	opc = r_debug_reg_get (dbg, dbg->reg->name[R_REG_NAME_PC]);
-	dbg->iob.read_at (dbg->iob.io, opc, obuf, sizeof (obuf));
-
+	pc = r_debug_reg_get (dbg, dbg->reg->name[R_REG_NAME_PC]);
+	dbg->iob.read_at (dbg->iob.io, pc, obuf, sizeof (obuf));
 	//dbg->iob.read_at (dbg->iob.io, npc, buf, sizeof (buf));
-
+	opc = pc;
 	//dbg->anal->reg = dbg->reg; // hack
 	esil->cb.hook_mem_read = &esilbreak_mem_read;
 	esil->cb.hook_mem_write = &esilbreak_mem_write;
@@ -249,13 +249,13 @@ R_API int r_debug_esil_stepi (RDebug *d) {
 		//	npc = r_debug_reg_get (dbg, dbg->reg->name[R_REG_NAME_PC]);
 	}
 
-	if (r_anal_op (dbg->anal, &op, opc, obuf, sizeof (obuf), R_ANAL_OP_MASK_ESIL)) {
-		if (esilbreak_check_pc (dbg, opc)) {
-			eprintf ("STOP AT 0x%08"PFMT64x"\n", opc);
+	if (r_anal_op (dbg->anal, &op, pc, obuf, sizeof (obuf), R_ANAL_OP_MASK_ESIL)) {
+		if (esilbreak_check_pc (dbg, pc)) {
+			eprintf ("STOP AT 0x%08"PFMT64x"\n", pc);
 			ret = 0;
 		} else {
-			r_anal_esil_set_pc (esil, opc);
-			eprintf ("0x%08"PFMT64x"  %s\n", opc, R_STRBUF_SAFEGET (&op.esil));
+			r_anal_esil_set_pc (esil, pc);
+			eprintf ("0x%08"PFMT64x"  %s\n", pc, R_STRBUF_SAFEGET (&op.esil));
 			(void)r_anal_esil_parse (esil, R_STRBUF_SAFEGET (&op.esil));
 			//r_anal_esil_dumpstack (esil);
 			r_anal_esil_stack_free (esil);
