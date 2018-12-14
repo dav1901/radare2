@@ -32,7 +32,6 @@ static int prestep = 1; // TODO: make it configurable
 static ut64 opc = 0;
 RList *esil_watchpoints = NULL;
 #define EWPS esil_watchpoints
-#define ESIL dbg->anal->esil
 
 static int exprmatch (RDebug *dbg, ut64 addr, const char *expr) {
 	char *e = strdup (expr);
@@ -218,14 +217,15 @@ R_API int r_debug_esil_stepi (RDebug *d) {
 	ut8 obuf[64];
 	int ret = 1;
 	dbg = d;
-	if (!ESIL) {
-		ESIL = r_anal_esil_new (32, true, 64);
+	RAnalEsil *esil = dbg->anal->esil;
+	if (!esil) {
+		esil = r_anal_esil_new (32, true, 64);
 		// TODO setup something?
-		if (!ESIL) {
+		if (!esil) {
 			return 0;
 		}
 	}
-
+	dbg->anal->esil = esil;
 	r_debug_reg_sync (dbg, R_REG_TYPE_GPR, false);
 	opc = r_debug_reg_get (dbg, dbg->reg->name[R_REG_NAME_PC]);
 	dbg->iob.read_at (dbg->iob.io, opc, obuf, sizeof (obuf));
@@ -233,10 +233,10 @@ R_API int r_debug_esil_stepi (RDebug *d) {
 	//dbg->iob.read_at (dbg->iob.io, npc, buf, sizeof (buf));
 
 	//dbg->anal->reg = dbg->reg; // hack
-	ESIL->cb.hook_mem_read = &esilbreak_mem_read;
-	ESIL->cb.hook_mem_write = &esilbreak_mem_write;
-	ESIL->cb.hook_reg_read = &esilbreak_reg_read;
-	ESIL->cb.hook_reg_write = &esilbreak_reg_write;
+	esil->cb.hook_mem_read = &esilbreak_mem_read;
+	esil->cb.hook_mem_write = &esilbreak_mem_write;
+	esil->cb.hook_reg_read = &esilbreak_reg_read;
+	esil->cb.hook_reg_write = &esilbreak_reg_write;
 
 	if (prestep) {
 		// required when a exxpression is like <= == ..
@@ -254,11 +254,11 @@ R_API int r_debug_esil_stepi (RDebug *d) {
 			eprintf ("STOP AT 0x%08"PFMT64x"\n", opc);
 			ret = 0;
 		} else {
-			r_anal_esil_set_pc (ESIL, opc);
+			r_anal_esil_set_pc (esil, opc);
 			eprintf ("0x%08"PFMT64x"  %s\n", opc, R_STRBUF_SAFEGET (&op.esil));
-			(void)r_anal_esil_parse (ESIL, R_STRBUF_SAFEGET (&op.esil));
-			//r_anal_esil_dumpstack (ESIL);
-			r_anal_esil_stack_free (ESIL);
+			(void)r_anal_esil_parse (esil, R_STRBUF_SAFEGET (&op.esil));
+			//r_anal_esil_dumpstack (esil);
+			r_anal_esil_stack_free (esil);
 			ret = 1;
 		}
 	}
