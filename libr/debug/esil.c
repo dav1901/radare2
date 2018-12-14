@@ -224,8 +224,8 @@ R_API int r_debug_esil_stepi (RDebug *d) {
 		if (!esil) {
 			return 0;
 		}
+		dbg->anal->esil = esil;
 	}
-	dbg->anal->esil = esil;
 	r_debug_reg_sync (dbg, R_REG_TYPE_GPR, false);
 	opc = r_debug_reg_get (dbg, dbg->reg->name[R_REG_NAME_PC]);
 	dbg->iob.read_at (dbg->iob.io, opc, obuf, sizeof (obuf));
