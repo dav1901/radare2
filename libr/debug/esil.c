@@ -89,7 +89,6 @@ static int esilbreak_mem_read(RAnalEsil *esil, ut64 addr, ut8 *buf, int len) {
 	r_list_foreach (EWPS, iter, ew) {
 		if (ew->rwx & R_PERM_R && ew->dev == 'm') {
 			if (exprmatch (dbg, addr, ew->expr)) {
-				has_match = 1;
 				return 1;
 			}
 		}
@@ -104,7 +103,6 @@ static int esilbreak_mem_write(RAnalEsil *esil, ut64 addr, const ut8 *buf, int l
 	r_list_foreach (EWPS, iter, ew) {
 		if (ew->rwx & R_PERM_W && ew->dev == 'm') {
 			if (exprmatch (dbg, addr, ew->expr)) {
-				has_match = 1;
 				return 1;
 			}
 		}
