@@ -30,8 +30,7 @@ RDebug *dbg = NULL;
 static int has_match = 0;
 static int prestep = 1; // TODO: make it configurable
 static ut64 opc = 0;
-RList *esil_watchpoints = NULL;
-#define EWPS esil_watchpoints
+RList *EWPS = NULL; // esil_watchpoints
 
 static int exprmatch (RDebug *dbg, ut64 addr, const char *expr) {
 	char *e = strdup (expr);
