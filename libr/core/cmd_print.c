@@ -4832,13 +4832,12 @@ static void print_json_string(RCore *core, const char* block, int len, const cha
 
 static int cmd_print(void *data, const char *input) {
 	RCore *core = (RCore *) data;
-	int i, l, len, ret;
+	int i = 0, l, len, ret = 0;
 	ut8* block;
 	ut32 tbs = core->blocksize;
 	ut64 n, off, from, to, at, ate, piece;
 	ut64 tmpseek = UT64_MAX;
 	const int addrbytes = core->io->addrbytes;
-	i = l = len = ret = 0;
 	n = off = from = to = at = ate = piece = 0;
 	PJ *pj = NULL;
 
