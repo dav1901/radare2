@@ -1791,7 +1791,7 @@ static void anop_esil(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len,
 			case X86_INS_BTR:
 				dst_w = getarg (&gop, 0, 1, "&", DST_R_AR, NULL);
 				r_strbuf_appendf (&op->esil, ",%d,%s,%%,1,<<,-1,^,%d,%s,/,%s,+,&=[%d]",
-						width * 8, src, width * 8, src, dst_r, width);
+						width * 8, src, width * 8, src, dst_w, width);
 				break;
 			}
 		} else {
