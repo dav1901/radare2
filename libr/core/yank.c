@@ -40,7 +40,7 @@ static int perform_mapped_file_yank(RCore *core, ut64 offset, ut64 len, const ch
 	RIODesc *yankdesc = NULL;
 	ut64 fd = core->file? core->file->fd: -1, yank_file_sz = 0,
 	     loadaddr = 0, addr = offset;
-	int res = false;
+	int ret = false;
 
 	if (filename && *filename) {
 		ut64 load_align = r_config_get_i (core->config, "file.loadalign");
@@ -82,7 +82,7 @@ static int perform_mapped_file_yank(RCore *core, ut64 offset, ut64 len, const ch
 				actual_len = 0;
 			}
 			r_core_yank_set (core, R_CORE_FOREIGN_ADDR, buf, len);
-			res = true;
+			ret = true;
 		} else if (res != addr) {
 			eprintf (
 				"ERROR: Unable to yank data from file: (loadaddr (0x%"
@@ -103,7 +103,7 @@ static int perform_mapped_file_yank(RCore *core, ut64 offset, ut64 len, const ch
 		core->switch_file_view = 1;
 		r_core_block_read (core);
 	}
-	return res;
+	return ret;
 }
 
 R_API int r_core_yank_set(RCore *core, ut64 addr, const ut8 *buf, ut32 len) {
