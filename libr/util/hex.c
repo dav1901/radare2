@@ -248,7 +248,7 @@ R_API char *r_hex_from_js(const char *code) {
 	char * s2 = strchr (code, '"');
 
 	/* there are no strings in the input */
-	if (!(s1 || s2)) {
+	if (!s1 || !s2) {
 		return NULL;
 	}
 
