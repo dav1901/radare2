@@ -62,13 +62,13 @@ R_API RList* r_type_get_enum (Sdb *TDB, const char *name) {
 		char *var2 = r_str_newf ("%s.%s", var, p);
 		if (var2) {
 			char *val = sdb_array_get (TDB, var2, 0, NULL);
+			free (var2);
 			if (val) {
 				member->name = p;
 				member->val = val;
 				r_list_append (res, member);
 			} else {
 				free (member);
-				free (var2);
 				free (p);
 			}
 		} else {
