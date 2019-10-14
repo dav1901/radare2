@@ -208,9 +208,9 @@ void aes_encrypt (struct aes_state *st, ut8 *in, ut8 *result) {
 // result     - The plaintext generated from a ciphertext using the session key.
 void aes_decrypt (struct aes_state *st, ut8 *in, ut8 *result) {
 #ifdef _MSC_VER
-	ut32 expkey[2][Nr_AES256 + 1][Nb];
+	ut32 expkey[2][Nr_AES256 + 1][Nb] = { 0 };
 #else
-	ut32 expkey[2][st->rounds + 1][Nb];
+	ut32 expkey[2][st->rounds + 1][Nb] = { 0 };
 #endif
 	
 	aes_expkey(st, expkey);
